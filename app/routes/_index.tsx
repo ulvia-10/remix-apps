@@ -13,7 +13,7 @@ export const meta: MetaFunction = () => {
 
 
 export const loader = async () => {
-  const supabase = createClient(process.env.REACT_APP_SUPABASE_URL!, process.env.REACT_APP_SUPABASE_ANON!);
+  const supabase = createClient('https://ccbyullgbwhokfopjgdv.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNjYnl1bGxnYndob2tmb3BqZ2R2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzMzNjQ4MzMsImV4cCI6MjA0ODk0MDgzM30.RYfC83SrMPEagcWjGvOv5ryyqwMB9byEPJ8XvaG9uIg');
   const { data } = await supabase.from('Book').select();
   return {
     data
