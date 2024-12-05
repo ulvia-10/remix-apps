@@ -12,9 +12,8 @@ export const meta: MetaFunction = () => {
 };
 
 
-
 export const loader = async () => {
-  const supabase = createClient(import.meta.env.REACT_APP_SUPABASE_URL, import.meta.env.REACT_APP_SUPABASE_ANON);
+  const supabase = createClient(process.env.REACT_APP_SUPABASE_URL!, process.env.REACT_APP_SUPABASE_ANON!);
   const { data } = await supabase.from('Book').select();
   return {
     data
