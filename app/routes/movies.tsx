@@ -1,4 +1,4 @@
-import { useLoaderData } from "@remix-run/react";
+import { useLoaderData, useLocation } from "@remix-run/react";
 import axios from "axios";
 import CardList from "~/components/cardlist/cardlist";
 
@@ -16,7 +16,7 @@ export async function loader() {
 
 export default function movies() {
     const movieData = useLoaderData<typeof loader>();
-    console.log(movieData, 'ni movies yaa')
+
     return (
         <>
             <h1 className="capitalize text-center text-3xl">List Movies</h1><div className="p-10">

@@ -2,7 +2,7 @@ import { Card, CardContent, CardDescription, CardTitle } from "../ui/card";
 import { format } from "date-fns";
 import { fromStringImagesToPng } from "~/lib/utils";
 import { Button } from "../ui/button";
-import { useFetcher } from "@remix-run/react";
+import { useFetcher, useLocation } from "@remix-run/react";
 
 interface ICardList {
     title: string;
@@ -19,13 +19,15 @@ export default function CardList({ title, name, image, release, id }: ICardList)
         fetcher.submit({ bookId }, { method: "post", action: "/books?actions=delete" });
     };
 
+    const { pathname } = useLocation();
+    const isMovie = pathname.split('/').includes('movies')
 
     const convertName = fromStringImagesToPng(image)
     return (
         <Card className="w-60 h-80 bg-slate-100 flex justify-center flex-col hover:shadow-lg hover:scale-90 cursor-pointer">
             <CardTitle className="p-2 mt-2 text-center">{title}</CardTitle>
             <CardContent>
-                <img src={convertName} className="w-64 h-44 rounded-sm" alt="book" />
+                <img src={isMovie ? image : convertName} className="w-64 h-44 rounded-sm" alt="book" />
                 <CardDescription className=" text-sm">
                     Release Date : {format(release, "dd MMM yyyy")}
                 </CardDescription>
