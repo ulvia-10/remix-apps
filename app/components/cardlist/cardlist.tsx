@@ -18,16 +18,12 @@ export default function CardList({ title, name, image, release, id }: ICardList)
     const handleDelete = (bookId: string) => {
         fetcher.submit({ bookId }, { method: "post", action: "/books?actions=delete" });
     };
-
-    const { pathname } = useLocation();
-    const isMovie = pathname.split('/').includes('movies')
-
-    const convertName = fromStringImagesToPng(image)
+    
     return (
         <Card className="w-60 h-80 bg-slate-100 flex justify-center flex-col hover:shadow-lg hover:scale-90 cursor-pointer">
             <CardTitle className="p-2 mt-2 text-center">{title}</CardTitle>
             <CardContent>
-                <img src={isMovie ? image : convertName} className="w-64 h-44 rounded-sm" alt="book" />
+                <img src={image} className="w-64 h-44 rounded-sm" alt="book" />
                 <CardDescription className=" text-sm">
                     Release Date : {format(release, "dd MMM yyyy")}
                 </CardDescription>

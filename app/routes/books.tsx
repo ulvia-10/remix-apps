@@ -6,6 +6,7 @@ import { Button } from "../components/ui/button";
 import { useActionData, useLoaderData } from "@remix-run/react";
 import { createClient } from "@supabase/supabase-js";
 import CardList from "~/components/cardlist/cardlist";
+import { fileToBase64 } from "~/lib/utils";
 
 type FormData = {
     name: string;
@@ -28,7 +29,7 @@ export const action = async ({ request }: { request: Request }) => {
     const url = new URL(request.url);
     const action = url.searchParams.get("actions");
 
-    const supabase = createClient(process.env.REACT_APP_SUPABASE_URL, process.env.REACT_APP_SUPABASE_ANON);
+    const supabase = createClient('https://ccbyullgbwhokfopjgdv.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNjYnl1bGxnYndob2tmb3BqZ2R2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzMzNjQ4MzMsImV4cCI6MjA0ODk0MDgzM30.RYfC83SrMPEagcWjGvOv5ryyqwMB9byEPJ8XvaG9uIg');
     const formData = await request.formData();
 
     if (action === "delete") {
@@ -51,24 +52,17 @@ export const action = async ({ request }: { request: Request }) => {
         const author = formData.get("author") as string;
         const image_name = formData.get("image_name") as string;
 
-        let imageBase64: string | null = null;
-        if (image_name) {
-            imageBase64 = fileToBase64(image_name);
-        }
 
         const { data, error } = await supabase
             .from("Book")
-            .insert([{ name, author, image_name: imageBase64 }]);
+            .insert([{ name, author, image_name: image_name }]);
 
         if (error) {
             console.error(error);
             return { error: error.message };
         }
-
+        return null
     }
-
-
-    return { success: "Data has been addedd successfully!" };
 };
 
 
@@ -152,19 +146,33 @@ export default function FormBook() {
                                                             className="cursor-pointer"
                                                             placeholder="File"
                                                             onChange={async (e) => {
-                                                                console.log(e.target.files, 'ini files apa?')
                                                                 const file = e.target.files ? e.target.files[0] : null;
                                                                 if (file) {
-                                                                    const base64 = await fileToBase64(file);
-                                                                    field.onChange(base64); // set base64 string to the form
+                                                                    try {
+                                                                        const supabase = createClient('https://ccbyullgbwhokfopjgdv.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNjYnl1bGxnYndob2tmb3BqZ2R2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzMzNjQ4MzMsImV4cCI6MjA0ODk0MDgzM30.RYfC83SrMPEagcWjGvOv5ryyqwMB9byEPJ8XvaG9uIg');
+                                                                        const { data, error } = await supabase.storage
+                                                                            .from('book_image')
+                                                                            .upload(`images/${file.name}`, file);
+                                                            
+                                                                        if (error) {
+                                                                            throw error; // throw error to catch in catch block
+                                                                        }
+                                                            
+                                                                        const imageUrl = `${process.env.REACT_APP_SUPABASE_URL}/storage/v1/object/public/book_images/${data.path}`;
+                                                                        field.onChange(imageUrl); // Update form with image URL
+                                                                    } catch (error) {
+                                                                        console.error("Error uploading file:", error.message);
+                                                                    }
                                                                 }
                                                             }}
+                                                            
                                                         />
                                                     </FormControl>
                                                     <FormMessage />
                                                 </FormItem>
                                             )}
                                         />
+
 
                                         {actionData?.error && <p className="error">{actionData.error}</p>}
                                         {actionData?.success && <p className="success">{actionData.success}</p>}
@@ -180,7 +188,9 @@ export default function FormBook() {
             <div className="p-10">
                 <div className="grid grid-cols-6 ml-6 gap-5 ">
                     {datas.data.map((item, index) => (
-                        <CardList key={index} id={item.id} title={item.author} image={item.image_name} release={item.created_at} />
+                        datas ?
+                            <CardList key={index} id={item.id} title={item.author} image={item.image_name} release={item.created_at} /> :
+                            <h1 key={index}>Empty List</h1>
                     ))
                     }
                 </div>

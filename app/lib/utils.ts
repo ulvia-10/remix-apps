@@ -5,23 +5,14 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-
-export function fileToBase64(file: Blob) {
+export const fileToBase64 = (file: File): Promise<string> => {
   return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.readAsDataURL(file);
-      reader.onload = () => {
-          const base64String = reader.result?.split(',')[1];
-          console.log("Base64 String: ", base64String); 
-          resolve(base64String);
-      };
-
-      reader.onerror = (error) => {
-          console.log("Error reading file:", error);
-          reject(error);
-      };
+      reader.onloadend = () => resolve(reader.result as string);
+      reader.onerror = (error) => reject(error);
   });
-}
+};
 
 
 export const fromStringImagesToPng = (evidence: string) => {
