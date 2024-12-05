@@ -2,7 +2,7 @@ import { redirect } from "@remix-run/react";
 import { createClient } from "@supabase/supabase-js";
 
 export const deleteAction = async ({ request }: { request: Request }) => {
-    const supabase = createClient(import.meta.env.REACT_APP_SUPABASE_URL, import.meta.env.REACT_APP_SUPABASE_ANON);
+    const supabase = createClient(process.env.REACT_APP_SUPABASE_URL!, process.env.REACT_APP_SUPABASE_ANON!);
 
     const formData = await request.formData();
     const bookId = formData.get("bookId") as string;

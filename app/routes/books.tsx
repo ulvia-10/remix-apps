@@ -15,7 +15,7 @@ type FormData = {
 };
 
 export const action = async ({ request }: { request: Request }) => {
-    const supabase = createClient(import.meta.env.REACT_APP_SUPABASE_URL, import.meta.env.REACT_APP_SUPABASE_ANON);
+    const supabase = createClient(process.env.REACT_APP_SUPABASE_URL, process.env.REACT_APP_SUPABASE_ANON);
     const formData = await request.formData();
     const name = formData.get("name") as string;
     const author = formData.get("author") as string;
